@@ -1,0 +1,57 @@
+#!/bin/bash
+#-----------------------------------------------------------
+# Description: Linux Lite Backup Dialogue
+# Authors: Misko_2083, Jerry Bezencon
+# Website: https://www.linuxliteos.com
+#-----------------------------------------------------------
+
+# Find last backup date
+HBUDATE=$(date -r /usr/scripts/backup/archive/home/music.tar.gz)
+
+# Main window dialogue.
+ INSTALLER_TITLE="Music Back Up
+----------------------------------------------------------------------------------------------------------------
+This will backup all of your <b>Music</b> files.
+
+Your last <b>Music</b> backup was: <b>$HBUDATE</b>
+
+When you click on Yes, this window will close and the process will begin.
+
+----------------------------------------------------------------------------------------------------------------
+Click on Yes to continue or No to cancel the back up process.\nWould you like to continue?"
+
+# Call the zenity window icon location.
+ INSTALL_ICON="/usr/share/icons/zenity-llcc.png"
+ HBUNAME="Music Back Up"
+        
+        zenity --question --title="$HBUNAME" --window-icon="${INSTALL_ICON}" --text="${INSTALLER_TITLE}"
+
+                if [ "$?" -eq "0" ]; then
+
+x=$( stdbuf -oL /bin/bash \-c '(find $HOME -name "*.amr" -o -name "*.flac" -o -name "*.m3u" -o -name "*.mp3" -o -name "*.ogg" -o -name "*.pls" -o -name "*.wav" | tar cvpzf archive/home/music.tar.gz -T - )' |
+stdbuf -oL sed -n -e '/\[*$/ s/^/# /p' -e '/\*$/ s/^/# /p'|
+zenity --progress --title="Backing up..." --pulsate \
+--width=600 --auto-close )
+
+                                if [ "${PIPESTATUS[0]}" -ne "0" ]; then
+                        
+                                        zenity --error \
+                                        --title="Error" --text="$HBUNAME has failed."
+                                        exit 0
+                                fi
+
+                else
+
+                                        exit 0
+                fi
+
+
+PROCEED=$(zenity --info --title="$HBUNAME" --window-icon=/usr/share/icons/zenity-llcc.png --text="The back up has finished."; echo $?)
+if [ ${PROCEED} -eq 1 ]; then
+	zenity --info --title="$HBUNAME" --window-icon="${INSTALL_ICON}" --text="$HBUNAME Complete."
+	exit;
+else
+	exit
+fi
+
+exit 0

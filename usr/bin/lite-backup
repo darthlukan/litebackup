@@ -1,0 +1,35 @@
+#! /bin/bash
+#--------------------------------------------------------------------------------------------------------
+# Name: Linux Lite Backup
+# Description: A GUI tool to easily backup your Linux Lite system.
+# Authors: Misko_2083, Jerry Bezencon
+# Date: September 24th, 2014
+# Website: https://www.linuxliteos.com
+#--------------------------------------------------------------------------------------------------------
+
+#HBUSIZE=$(du -sh /var/cache/apt/archives/ | awk '{print $1}')
+
+#icon
+ic="/usr/share/icons/Faenza/devices/48/drive-harddisk.png"
+
+selection=$(zenity --window-icon="$ic" --list --checklist --width=800 --height=360 --column="Select" --column="Backup Type" --column="Last Backup" \
+ --column="Description" --text='Select the directories you wish to backup, then click the Backup button.\nEach user on this computer will need to run this utility if you intend to reinstall Linux Lite.\n\nYou can select multiple backups to perform (password required for some backups).' --title="Lite Backup" --ok-label="Backup" --cancel-label="Quit" \
+FALSE "Home folder backup" "22-09-2014" "This will back up all of your hidden home folders" \
+FALSE "System files backup" "09-08-2014" "This will backup selected system files" \
+FALSE "Browser bookmarks" "22-09-2014" "This will back up all of your web browser bookmarks" \
+FALSE "Documents backup" "14-09-2014" "This will backup all .csv .doc .docx .odp .ods .odt .pdf .rtf .txt .xls  files" \
+FALSE "Pictures backup" "06-07-2014" "This will backup all .bmp .gif .jpg .png .psd .svg .tiff files" \
+FALSE "Music files backup" "08-09-2014" "This will backup all .amr .flac .m3u .mp3 .ogg .pls .wav files" \
+FALSE "Video files backup" "17-09-2014" "This will backup all .3gp .avi .flv .mkv .mov .mp4 .mpeg .ogm .ogv .webm .wmv files" )
+
+# Exec scripts
+
+echo $selection | grep "Home folder backup" > /dev/null
+if [ $? = 0 ];then
+/usr/scripts/backup/homebackup 2>/dev/null
+fi
+
+echo $selection | grep "System files backup" > /dev/null
+if [ $? = 0 ];then
+/usr/scripts/backup/systembackup 2>/dev/null
+fi
